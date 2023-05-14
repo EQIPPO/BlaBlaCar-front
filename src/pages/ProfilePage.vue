@@ -12,7 +12,8 @@
                     minlength="3">
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-primary mb-3" @click="editName($event, this.$refs.nameEditForm)">Зберегти</button>
+                <button type="submit" class="btn btn-primary mb-3"
+                    @click="editName($event, this.$refs.nameEditForm)">Зберегти</button>
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-secondary mb-3"
@@ -94,8 +95,7 @@ export default {
             this.editingName = false;
             this.ownAccount = false;
 
-            if (currentUserId && (!this.$route.params.id || this.$route.params.id == currentUserId))
-            {
+            if (currentUserId && (!this.$route.params.id || this.$route.params.id == currentUserId)) {
                 this.ownAccount = true;
                 this.editedName = blablacar.getCurrentUser().name;
             }
@@ -163,23 +163,5 @@ export default {
 }
 </script>
 
-<style scoped>
-h3 {
-    margin: 40px 0 0;
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-a {
-    color: #42b983;
-}
-</style>
+<style scoped></style>
   

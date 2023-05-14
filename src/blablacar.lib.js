@@ -23,7 +23,28 @@ function get(url, data = {}, headers = {}) {
     return request(url, "GET", data, headers);
 }
 
-const API_URL = "http://192.168.0.2/api";
+function createQuery(data) {
+    let query = "?";
+    for (let key in data) {
+        if (data[key] === undefined || data[key] === null)
+            continue;
+
+        if (data[key] instanceof String && data[key].length < 1)
+            continue;
+
+        if (data[key] instanceof Number && isNaN(data[key]))
+            continue;
+
+        query += key + "=" + data[key] + "&";
+    }
+    query = query.slice(0, -1);
+    if (query.length < 1)
+        return "";
+    return query;
+}
+
+//const API_URL = "http://192.168.0.2/api";
+const API_URL = "/api";
 
 module.exports = {
     parseForm: (form) => {
@@ -155,6 +176,132 @@ module.exports = {
             user.name = name;
             localStorage.setItem("user", JSON.stringify(user));
             return result;
+        }
+        throw result.message;
+    },
+    getHints: async (query) => {
+        const result = await get(API_URL + "/trips/hints/?q=" + query);
+
+        if (result.status === 200) {
+            return result.hints;
+        }
+        throw result.message;
+    },
+    createRide: async (from, to, count, time, description) => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        if (from == '' || to == '' || count == '' || time == '')
+            throw "Заповніть всі поля";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await post(API_URL + "/trips/", { start: from, end: to, passengers: count, time: time, description: description }, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result;
+        }
+        throw result.message;
+    },
+    getRides: async (from, to, passengers, timestamp) => {
+        let headers = {};
+        if (module.exports.isLoggedIn()) {
+            let authToken = 'Bearer ' + localStorage.getItem("token");
+            headers = {
+                'authorization': authToken
+            };
+        }
+        let query = createQuery({ start: from, end: to, passengers: passengers, time: timestamp });
+        const result = await get(API_URL + "/trips/" + query, {}, headers);
+
+        if (result.status === 200) {
+            return result.trips;
+        }
+        throw result.message;
+    },
+    getTrip: async (id) => {
+        let headers = {};
+        if (module.exports.isLoggedIn()) {
+            let authToken = 'Bearer ' + localStorage.getItem("token");
+            headers = {
+                'authorization': authToken
+            };
+        }
+        const result = await get(API_URL + "/trips/" + id, {}, headers);
+
+        if (result.status === 200) {
+            return result.trip;
+        }
+        throw result.message;
+    },
+    getPassengerTrips: async () => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await get(API_URL + "/reservations/passenger", {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result.reservations;
+        }
+        throw result.message;
+    },
+    getDriverTrips: async () => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await get(API_URL + "/reservations/driver", {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result.trips;
+        }
+        throw result.message;
+    },
+    isTripReserved: async (id) => {
+        if (!module.exports.isLoggedIn())
+            return false;
+
+        const passengerTrips = await module.exports.getPassengerTrips();
+        for (let trip of passengerTrips) {
+            if (trip.id == id)
+                return true;
+        }
+
+        return false;
+    },
+    reserveTrip: async (id, comment) => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await post(API_URL + "/reservations/", { tripId: id, comment: comment }, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result;
+        }
+        throw result.message;
+    },
+    getOwnTrips: async () => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const user = module.exports.getCurrentUser();
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await get(API_URL + "/trips/?driver_id=" + user.id, {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result.trips;
         }
         throw result.message;
     }

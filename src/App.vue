@@ -23,9 +23,8 @@
               </a>
 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-
                 <router-link class="dropdown-item" to="/profile">Профіль</router-link>
-                <router-link class="dropdown-item" to="/reservations">Бронювання</router-link>
+                <router-link class="dropdown-item" to="/reservations">Бронювання та поїздки</router-link>
                 <router-link class="dropdown-item" to="/admin" v-if="account.admin">Панель керування</router-link>
                 <router-link class="dropdown-item" to="/" @click="logout()">Вийти</router-link>
               </div>
@@ -96,5 +95,23 @@ export default {
 <style>
 body {
   background: #1e1e1e;
+}
+
+h3 {
+  margin: 40px 0 0;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+a {
+  color: #42b983;
 }
 </style>

@@ -115,7 +115,6 @@ export default {
                     this.account = account;
                     this.account.id = this.$route.params.id;
                     if (blablacar.isLoggedIn() && this.account.id != currentUserId) {
-                        console.log(this.account.id, currentUserId)
                         this.showPrompt = true;
                     }
                 }).catch((err) => {

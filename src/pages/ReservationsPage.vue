@@ -37,23 +37,28 @@
                 <div class="mb-2">
                     <span><b>Звідки:</b> {{ trip.start }}</span><br />
                     <span><b>Куди:</b> {{ trip.end }}</span><br />
-                    <span><b>Коли:</b> {{ new Date(trip.trip_time * 1000).toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' })
+                    <span><b>Коли:</b> {{ new Date(trip.trip_time * 1000).toLocaleString('uk-UA', {
+                        timeZone: 'Europe/Kiev'
+                    })
                     }}</span>
                 </div>
                 <div class="mb-2">
                     <span><b>Час бронювання:</b> {{ trip.time }}</span><br />
                     <span><b>Ваш коментар:</b> {{ trip.comment }}</span><br />
                 </div>
-                <div class="mb-2" v-if="trip.response">
+                <div class="mb-2" v-if="trip.response_time">
                     <span><b>Відповідь:</b> {{ trip.response }}</span><br />
-                    <span><b>Час відповіді:</b> {{ trip.response_time }}</span><br />
+                    <span><b>Час відповіді:</b> {{ new Date(trip.response_time).toLocaleString('uk-UA', {
+                        timeZone:
+                            'Europe/Kiev'
+                    }) }}</span><br />
                     <span><b>Статус відповіді:</b> {{ trip.status == 1 ? 'Погоджено' : 'Відхилено' }}</span>
                 </div>
                 <div class="mb-2" v-else>
                     <b>Очікуйте на відповідь</b>
                 </div>
                 <span>
-                    <router-link :to="'/rides/' + trip.id">
+                    <router-link :to="'/rides/' + trip.trip_id">
                         <button type="button" class="btn btn-success">
                             Детальніше »
                         </button>

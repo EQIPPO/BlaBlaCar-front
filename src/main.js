@@ -9,6 +9,7 @@ import CreateRidePage from './pages/CreateRidePage.vue'
 import SearchRidePage from './pages/SearchRidePage.vue'
 import RidePage from './pages/RidePage.vue'
 import ReservationsPage from './pages/ReservationsPage.vue'
+import AdminPage from './pages/AdminPage.vue'
 
 import NotFoundPage from './pages/NotFoundPage.vue'
 
@@ -23,6 +24,7 @@ const router = createRouter({
         { path: '/rides', component: SearchRidePage },
         { path: '/rides/:id', component: RidePage },
         { path: '/reservations', component: ReservationsPage },
+        { path: '/admin', component: AdminPage },
 
         { path: '/:pathMatch(.*)*', component: NotFoundPage },
     ]

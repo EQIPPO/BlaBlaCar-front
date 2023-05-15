@@ -23,6 +23,14 @@ function get(url, data = {}, headers = {}) {
     return request(url, "GET", data, headers);
 }
 
+function del(url, data = {}, headers = {}) {
+    return request(url, "DELETE", data, headers);
+}
+
+function patch(url, data = {}, headers = {}) {
+    return request(url, "PATCH", data, headers);
+}
+
 function createQuery(data) {
     let query = "?";
     for (let key in data) {
@@ -43,7 +51,7 @@ function createQuery(data) {
     return query;
 }
 
-//const API_URL = "http://192.168.0.2/api";
+// const API_URL = "http://192.168.0.2/api";
 const API_URL = "/api";
 
 module.exports = {
@@ -259,7 +267,7 @@ module.exports = {
         });
 
         if (result.status === 200) {
-            return result.trips;
+            return result.reservations;
         }
         throw result.message;
     },
@@ -268,8 +276,9 @@ module.exports = {
             return false;
 
         const passengerTrips = await module.exports.getPassengerTrips();
+        console.log(`isTripReserved(${id}):`, passengerTrips);
         for (let trip of passengerTrips) {
-            if (trip.id == id)
+            if (trip.trip_id == id)
                 return true;
         }
 
@@ -302,6 +311,148 @@ module.exports = {
 
         if (result.status === 200) {
             return result.trips;
+        }
+        throw result.message;
+    },
+    respondToReservation: async (id, status, reply) => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await post(API_URL + "/reservations/respond/" + id, { response: status, comment: reply }, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result;
+        }
+        throw result.message;
+    },
+    adminGetComments: async () => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await get(API_URL + "/admin/ratings/", {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result.ratings;
+        }
+        throw result.message;
+    },
+    adminDeleteComment: async (id) => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await del(API_URL + "/admin/ratings/" + id, {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result;
+        }
+        throw result.message;
+    },
+    adminGetUsers: async () => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await get(API_URL + "/admin/users/", {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result.users;
+        }
+        throw result.message;
+    },
+    adminDeleteUser: async (id) => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await del(API_URL + "/admin/users/" + id, {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result;
+        }
+        throw result.message;
+    },
+    adminMakeAdminUser: async (id, perms) => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+
+        const result = await patch(API_URL + "/admin/users/" + id, { is_admin: perms }, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result;
+        }
+        throw result.message;
+    },
+    adminGetTrips: async () => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await get(API_URL + "/admin/trips/", {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result.trips;
+        }
+        throw result.message;
+    },
+    adminDeleteTrip: async (id) => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await del(API_URL + "/admin/trips/" + id, {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result;
+        }
+        throw result.message;
+    },
+    adminGetReservations: async () => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+        const result = await get(API_URL + "/admin/reservations/", {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result.reservations;
+        }
+        throw result.message;
+    },
+    adminDeleteReservation: async (id) => {
+        if (!module.exports.isLoggedIn())
+            throw "Ви не авторизовані";
+
+        const authToken = 'Bearer ' + localStorage.getItem("token")
+
+        const result = await del(API_URL + "/admin/reservations/" + id, {}, {
+            'authorization': authToken
+        });
+
+        if (result.status === 200) {
+            return result;
         }
         throw result.message;
     }
